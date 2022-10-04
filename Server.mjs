@@ -4,6 +4,10 @@ import cors from 'cors'
 
 
 
+const app = express();
+app.use(express.json())
+app.use(cors())
+
 const ProductSchema = new mongoose.Schema({
     productName: String,
     productprice: Number,
@@ -20,14 +24,23 @@ const ProductModel = mongoose.model('Product', ProductSchema);
 
 
 
-const app = express();
-app.use(express.json())
-app.use(cors())
 
-const PORT = process.env.PORT || 3000;
+
+ const PORT = process.env.PORT || 3000;
 
 app.get("/products", async(req, res)=>{
-    let result = await ProductModel.find({}).exec()
+     let result = await ProductModel
+     .find({})
+     .exec()
+     .catch(e => {
+        console.log("error in db ", e)
+        res.status(500).send({message : "error in getting All Product "})
+        return
+     })
+    res.send({
+        message: "Get All Product success",
+        data : result
+    })
 })
 
 app.post('/product', async(req, res)=>{
@@ -80,7 +93,7 @@ app.listen(PORT,()=>{
 
 
 
-let  dburl = "mongodb+srv://down:12345@cluster0.kyfnktu.mongodb.net/ecommerce?retryWrites=true&w=majority"
+let  dburl = "mongodb+srv://Ecommerce:abc123@cluster0.at4iqzz.mongodb.net/ecommerce?retryWrites=true&w=majority"
 mongoose.connect(dburl)
 //connection 
 
